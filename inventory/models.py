@@ -24,6 +24,7 @@ class Location(models.Model):
     
     class Meta:
         verbose_name = 'Lieu'
+        verbose_name_plural = 'Lieux'
     
 class State(models.Model):
     state = models.CharField("État", max_length=225)

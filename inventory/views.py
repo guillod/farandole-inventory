@@ -7,31 +7,51 @@ from django_filters.views import FilterView
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import Group, User
 from django.conf import settings
+from django.utils.crypto import get_random_string
+import requests
 
 from .models import Object
 from .forms import ObjectForm
 from .filters import ObjectFilter
 
 
-def dummylogin(request):
-    token = settings.DUMMY_LOGIN['token']
-    password = settings.DUMMY_LOGIN['password']
-    if 'uid' in request.GET and 'email' in request.GET and 'dn' in request.GET and request.GET.get('token',None) == settings.TOKEN:
-        username = request.GET['uid']
-        email = request.GET['email']
-        displayname = request.GET['dn']
+def login_oauth(request):
+    state = get_random_string(length=12)
+    request.session['state'] = state
+    return redirect(f"{settings.OAUTH['authorize_url']}?response_type=code&client_id={settings.OAUTH['client_id']}&state={state}")
+
+def authorize(request):
+    # parse parameters
+    code = request.GET.get('code', False)
+    state = request.GET.get('state', False)
+    # validate state
+    if request.session['state'] != state: redirect('home')
+    # get access token
+    r = requests.post(settings.OAUTH['access_token_url'], data={'grant_type':'authorization_code', 'code':code, 'state':state, 'client_id':settings.OAUTH['client_id'], 'client_secret': settings.OAUTH['client_secret']})
+    if r.status_code != 200:
+        return render(request, "error.html", {'error': "Impossible d'obtenir une authentification"})
+    access_token = r.json().get('access_token', None)
+    # get user data
+    r = requests.get(settings.OAUTH['user_info_url'], headers={'authorization': f"Bearer {access_token}"})
+    if r.status_code != 200:
+        return render(request, "error.html", {'error': "Authentification invalide"})
+    try:
+        username = r.json()['ocs']['data']['id']
+        email = r.json()['ocs']['data']['email']
+        displayname = r.json()['ocs']['data']['display-name']
         displayname = displayname.split(" \u200b")[0]
-        # get or create user
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            user = User.objects.create_user(username, email, password, last_name=displayname, is_staff=True)
-        # add group
-        group = Group.objects.get(name='group')
-        user.groups.add(group)
-        # authenticate and login
-        user = authenticate(request, username=username, password=password)
-        if user is not None: login(request, user)
+    except:
+        return render(request, "error.html", {'error': "Impossible d'importer les données"})
+    # get or create user
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User.objects.create_user(username, email, last_name=displayname, is_staff=True)
+    # add group
+    group = Group.objects.get(name='group')
+    user.groups.add(group)
+    # login and redirect
+    login(request, user)
     return redirect('home')
 
 class ObjectListView(LoginRequiredMixin,FilterView):
@@ -61,10 +81,6 @@ class ObjectGridView(LoginRequiredMixin,FilterView):
         return super().get(request, *args, **kwargs)
 
 def home(request):
-    # redirect to nextcloud login (then nextcloud redirect to)
-    if not request.user.is_authenticated:
-        return redirect("https://cloud.crechefarandole.com/apps/external/1")
-
     # get corresponding view (grid or list)
     if request.session.get('grid', False):
         return ObjectGridView.as_view()(request)
