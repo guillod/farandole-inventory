@@ -1,0 +1,74 @@
+{% extends 'basepage.html' %}
+{% load widget_tweaks static %}
+
+{% block head_css_page %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+  .card-img-top {
+      height: 31vw;
+      object-fit: cover;
+  }
+  /* Small devices (landscape phones, 576px and up) */
+  @media (min-width: 576px) {
+    .card-img-top {
+        height: 23vw;
+    }
+  }
+  /* Medium devices (tablets, 768px and up) */
+  @media (min-width: 768px) {
+    .card-img-top {
+        height: 15vw;
+    }
+  }
+  /* Large devices (desktops, 992px and up) */
+  @media (min-width: 992px) {
+    .card-img-top {
+        height: 12vw;
+    }
+    .row-cols-lg-8 > * {
+      flex: 0 0 12.5%;
+      max-width: 12.5%;
+  }
+  }
+
+</style>
+
+{% endblock head_css_page %}
+
+{% block footer_javascript_page %}
+{% endblock footer_javascript_page %}
+
+{% block content %}
+
+  {% include 'messages.html' %}
+
+  {% with view="grid" %} 
+    {% include 'inventory/filters.html' %}
+  {% endwith %}
+
+  <div class="row row-cols-3 row-cols-sm-4 row-cols-md-6 row-cols-lg-8 my-1 g-2">
+    <div class="col">
+      <div class="card">
+        <img class="card-img-top" src="{% static 'plus-solid.png' %}"></a>
+        <div class="card-body">
+          Ajouter nouvel objet
+          <a href="{% url 'add' %}" class="stretched-link"></a>
+        </div>
+      </div>
+    </div>
+    {% for obj in page_obj %}
+    <div class="col">
+      <div class="card">
+        <img class="card-img-top" src="{{ obj.photo_url }}"></a>
+        <div class="card-body">
+          {{ obj.description }}
+          <a href="{% url 'change' obj.id %}" class="stretched-link"></a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% include 'pagination.html' %}
+
+{% endblock %}

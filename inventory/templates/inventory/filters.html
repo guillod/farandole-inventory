@@ -1,0 +1,17 @@
+{% load widget_tweaks %}
+
+<form name="form" method="get" class="my-1 p-1 row align-items-center">
+    {% for field in filter.form %}
+      <div class="col input-group mx-1 p-1">
+        <div class="input-group-text">{{ field.label }}</div>
+        {% render_field field class="form-control" onchange="form.submit()" %}
+      </div>
+      {% if field.name == "group" %}<div class="w-100 d-lg-none"></div>{% endif %}
+    {% endfor %}
+    {% if view %}
+    <div class="col-auto my-1">
+      {% if view == 'list' %}<a href="{% url 'grid' %}"><i class="fa-solid fa-th fa-2x"></i></a>{% endif %}
+      {% if view == 'grid' %}<a href="{% url 'list' %}"><i class="fa-solid fa-list fa-2x"></i></a>{% endif %}
+    </div>
+    {% endif %}
+</form>

@@ -1,0 +1,51 @@
+{% extends 'basepage.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Inventaire - {{instance|yesno:"Modifier,Ajouter"}}{% endblock title %}
+{% block navbar_title %}Inventaire - {{instance|yesno:"Modifier,Ajouter"}}{% endblock navbar_title %}
+
+{% block head_css_page %}
+{% endblock head_css_page %}
+
+{% block footer_javascript_page %}
+{% endblock footer_javascript_page %}
+
+{% block content %}
+
+  <form method="post" class="col-lg-6 mx-auto my-2" enctype="multipart/form-data">
+
+    {% include 'messages.html' %}
+
+    {% csrf_token %}
+
+    {% for field in form.visible_fields %}
+    <div class="mb-3">
+      <label for="{{ field.id_for_label }}" class="form-label-lg">{{ field.label }}</label>
+    {% if form.is_bound %}
+
+      {% if field.errors %}
+        {% render_field field class="form-control form-control-lg is-invalid" %}
+        {% for error in field.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      {% else %}
+        {% render_field field class="form-control form-control-lg is-valid" %}
+      {% endif %}
+    {% else %}
+      {% render_field field class="form-control form-control-lg" %}
+    {% endif %}
+    </div>
+    {% endfor %}
+    <div class="d-grid gap-2 mb-3">
+      <button class="btn btn-primary btn-lg btn-block" type="submit" name="save">Enregistrer</button>
+      {% if instance %}
+      <a href="{% url 'delete' instance.id %}" class="btn btn-danger btn-lg btn-block px-4">Supprimer</a>
+      {% else %}
+      <button class="btn btn-success btn-lg btn-block" type="submit" name="addanother">Enregistrer et ajouter</button>
+      {% endif %}
+      <a href="{% url 'home' %}" class="btn btn-outline-primary btn-lg btn-block">Annuler</a>
+    </div>
+
+  </form>
+
+{% endblock %}

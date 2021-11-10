@@ -1,0 +1,70 @@
+{% extends 'basepage.html' %}
+{% load widget_tweaks %}
+
+{% block head_css_page %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock head_css_page %}
+
+{% block footer_javascript_page %}
+{% endblock footer_javascript_page %}
+
+{% block content %}
+
+  {% include 'messages.html' %}
+
+  <table class="table table-striped table-lg">
+    <thead>
+      <tr>
+        <th scope="col">Description</th>
+        <th scope="col">Nb</th>
+        <th scope="col">Catégorie</th>
+        <th scope="col">Localisation</th>
+        <th scope="col">État</th>
+        <th scope="col" class="text-center">Photo</th>
+        <th scope="col">Fournisseur</th>
+        <th scope="col">Prix d'achat</th>
+        <th scope="col">Date d'achat</th>
+        <th scope="col">Date d'ajout</th>
+        <th scope="col">Date de mise à jour</th>
+        <th scope="col"><a href="{% url 'add' %}"><i class="fa-solid fa-plus"></i></a></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in page_obj %}
+      <tr{% if assign.current %} class="table-warning"{% endif %}>
+        <td class="align-middle">{{ obj.description }}</td>
+        <td class="align-middle">{{ obj.nb }}</td>
+        <td class="align-middle">{{ obj.group }}</td>
+        <td class="align-middle">{{ obj.location }}</td>
+        <td class="align-middle">{{ obj.state|default_if_none:"" }}</td>
+        <td class="align-middle text-center">{% if obj.photo %}<a href="{{ obj.photo.url }}"><img src="{{ obj.photo.url }}" style="max-height:100px;"></a>{% endif %}</td>
+        <td class="align-middle">{{ obj.supplier|default_if_none:"" }}</td>
+        <td class="align-middle">{{ obj.price|default_if_none:"" }}</td>
+        <td class="align-middle">{{ obj.buy_at|date:'d/m/Y'|default_if_none:"" }}</td>
+        <td class="align-middle">{{ obj.created_at|date:'d/m/Y' }}</td>
+        <td class="align-middle">{{ obj.updated_at|date:'d/m/Y' }}</td>
+        <td class="align-middle text-center"><a href="{% url 'change' obj.id %}"><i class="fa-solid fa-pen-to-square"></i></a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <nav aria-label="pagination">
+    <ul class="pagination justify-content-center">
+      {% if page_obj.has_previous %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">&laquo;</a></li>
+      {% else %}
+      <li class="page-item disabled "><a class="page-link">&laquo;</a></li>
+      {% endif %}
+      {% for i in page_obj.paginator.page_range %}
+      <li class="page-item{% if page_obj.number == i %} active{% endif %}"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+      {% endfor %}
+      {% if page_obj.has_next %}
+      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">&raquo;</a></li>
+      {% else %}
+      <li class="page-item disabled "><a class="page-link">&raquo;</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+{% endblock %}

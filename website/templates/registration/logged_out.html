@@ -1,0 +1,15 @@
+{% extends "basepage.html" %}
+
+{% block title %}Déconnexion{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column min-vh-100 justify-content-center align-items-center">
+  <h1 class="my-2 text-center">Inventaire</h1>
+
+  <div class="col-md-3 mx-auto alert alert-success text-center" role="alert">
+    Vous êtes maintenant déconnecté.<br/>
+    <a href="{% url 'login'%}">Cliquer ici</a> pour vous reconnecter.
+  </div>
+
+</div>
+{% endblock %}

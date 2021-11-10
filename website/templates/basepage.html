@@ -1,0 +1,68 @@
+{% spaceless %}
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset=utf-8>
+  <meta name="robots" content="noarchive">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Inventaire Crèche Farandole">
+  <meta name="author" content="Crèche Farandole">
+
+  <title>{% block title %}Inventaire{% endblock title %}</title>
+  {% block head_css %}
+    {% block head_css_site %}
+      {% load static %}<link rel="manifest" href="/manifest.json">
+      {% load static %}<link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+      {% load static %}<script src="{% static 'bootstrap.min.js' %}"></script>
+    {% endblock head_css_site %}
+    {% block head_css_page %}{% endblock head_css_page %}
+  {% endblock head_css %}
+  <style>
+    /* body { font-size:120%; } */
+  </style>
+</head>
+
+<body>
+
+  {% if false and user.is_authenticated %}
+
+  <nav class="navbar navbar-expand-sm navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">{% block navbar_title %}Inventaire{% endblock navbar_title %}</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'home' %}">Liste</a></li>
+          <li class="nav-item"><a class="nav-link" aria-current="page" href="{% url 'add' %}">Ajout</a></li>
+          {% if user.is_staff %}<li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Administration</a></li>{% endif %}
+          <!--<li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ user.first_name }} {{ user.last_name }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              {% if user.is_staff %}<li><a class="dropdown-item" href="{% url 'admin:index' %}">Administration</a></li>{% endif %}
+              <li><a class="dropdown-item" href="{% url 'logout'%}?next={{request.path}}">Déconnexion</a></li>
+            </ul>
+          </li>-->
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% endif %}
+
+  <div class="container-fluid">
+    {% block content %}
+      error
+    {% endblock %}
+  </div>
+
+  {% block footer_javascript %}
+    {% block footer_javascript_site %}{% endblock footer_javascript_site %}
+    {% block footer_javascript_page %}{% endblock footer_javascript_page %}
+  {% endblock footer_javascript %}
+</body>
+</html>
+{% endspaceless %}

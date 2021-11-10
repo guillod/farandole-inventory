@@ -1,0 +1,7 @@
+**/__pycache__
+**/migrations/
+/db/
+/venv/
+/static/
+/photos/
+/settings.json

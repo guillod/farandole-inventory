@@ -1,0 +1,52 @@
+{% extends 'basepage.html' %}
+{% load widget_tweaks %}
+
+{% block head_css_page %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css" integrity="sha512-YWzhKL2whUzgiheMoBFwW8CKV4qpHQAEuvilg9FAn5VJUDwKZZxkJNuGM4XkWuk94WCrrwslk8yWNGmY1EduTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+{% endblock head_css_page %}
+
+{% block footer_javascript_page %}
+{% endblock footer_javascript_page %}
+
+{% block content %}
+
+  {% include 'messages.html' %}
+
+  {% with view="list" %} 
+    {% include 'inventory/filters.html' %}
+  {% endwith %}
+
+  <div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th scope="col">Description</th>
+        <th scope="col">Nb</th>
+        <th scope="col">Propriétés</th>
+        <th scope="col" class="text-center">Photo</th>
+        <th scope="col">Achat</th>
+        <th scope="col">Ajout & mise à jour</th>
+        <th scope="col" class="text-center"><a href="{% url 'add' %}"><i class="fa-solid fa-plus fa-2x"></i></a></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for obj in page_obj %}
+      <tr{% if assign.current %} class="table-warning"{% endif %}>
+        <td class="align-middle">{{ obj.description }}</td>
+        <td class="align-middle">{{ obj.nb }}</td>
+        <td class="align-middle">{{ obj.group }}<br>{{ obj.location }}{% if obj.state %}<br>{{ obj.state }}{% endif %}</td>
+        <td class="align-middle text-center">{% if obj.photo %}<a href="{{ obj.photo.url }}"><img src="{{ obj.photo.url }}" style="max-height:100px;"></a>{% endif %}</td>
+        <td class="align-middle">{{ obj.supplier|default_if_none:"" }}
+                                 {% if obj.price %}<br>{{ obj.price }}€{% endif %}
+                                 {% if obj.buy_at %}<br>{{ obj.buy_at|date:'d/m/Y' }}{% endif %}</td>
+        <td class="align-middle">{{ obj.created_at|date:'d/m/Y H:m' }}<br>{{ obj.updated_at|date:'d/m/Y H:m' }}</td>
+        <td class="align-middle text-center"><a href="{% url 'change' obj.id %}"><i class="fa-solid fa-pen-to-square fa-lg"></i></a></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  {% include 'pagination.html' %}
+
+{% endblock %}

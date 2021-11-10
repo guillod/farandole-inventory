@@ -1,0 +1,12 @@
+{
+    "short_name": "Inventaire",
+    "name": "Inventaire de la Crèche Farandole",
+    "icons": {
+        "48": "static/icon-48.png",
+        "96": "static/icon-96.png"
+      },
+    "display": "standalone",
+    "background_color": "#4582ec",
+    "theme_color": "#4582ec",
+    "lang": "fr"
+}
